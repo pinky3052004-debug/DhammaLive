@@ -17,7 +17,7 @@ jobs:
     - name: Set up Python
       uses: actions/setup-python@v5
       with:
-        python-version: '3.10'
+        python-version: '3.12'
 
     - name: Install Dependencies
       run: |
@@ -164,7 +164,7 @@ jobs:
         🌄 မနက်စောစောနဲ့ညအချိန် – တရားနာဖို့အတွက် တရားတော်များ ▶️Playlist  🌟
         🌤️ မနက်စောစောတရားနာခြင်းသည် စိတ်အေးချမ်းမှုကို ပေးစွမ်းနိုင်ပြီး ကုသိုလ်ထူးများရရှိနိုင်ပါသည်။
         ▶️📌တရားနာယူရန် Playlist Link:
-           • နံနက်ခင်း Live Stream တရားတော်များ  
+           • นံနက်ခင်း Live Stream တရားတော်များ  
 
         🌙 ညနေ/ညအချိန်တွင်တရားနာခြင်းကလည်း စိတ်အေးချမ်းမူကိုပေးစွမ်းကာ ကုသိုလ်များ တိုးပွားစေပါသည်။
         ▶️📌တရားနာယူရန် Playlist Link:
@@ -184,7 +184,7 @@ jobs:
 
         ✅ Subscribe: / @Dhamma-Mate_Swe
 
-        🌿 𝟒–𝟕 𝐇𝐨𝐮𝐫ս 𝐏eaceful 𝐁uddha 𝐂hanting & 飾hamma 𝐒tream 🕊️
+        🌿 𝟒–𝟕 𝐇𝐨𝐮𝐫ս 𝐏eaceful 𝐁uddha 𝐂hanting & 𝐃hamma 𝐒tream 🕊️
         Welcome to our mindful meditation space. This stream is dedicated to the preservation and sharing of the Buddha’s original teachings (Tipiṭaka/Pali Canon), specifically designed for deep meditation, relaxation, and spiritual learning.
 
         ✨ Stream Features & Originality
