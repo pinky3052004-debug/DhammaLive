@@ -32,7 +32,7 @@ jobs:
         path: .
       continue-on-error: True
 
-    # Python Script ဖြင့် DhammaYT Folder မှ ဗီဒီယိုနှင့် Thumbnail ကို ဆွဲခြင်း၊ YouTube ပွဲဆောက်ခြင်း
+    # Python Script ဖြင့် သတ်မှတ်ထားသော Folder ID မှ ဗီဒီယိုနှင့် Thumbnail ကို ဆွဲခြင်း၊ YouTube ပွဲဆောက်ခြင်း
     - name: Process Video, Thumbnail & YouTube Setup
       id: main_process
       env:
@@ -40,6 +40,7 @@ jobs:
         CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}
         REFRESH_TOKEN: ${{ secrets.REFRESH_TOKEN }}
         GDRIVE_SERVICE_ACCOUNT: ${{ secrets.GDRIVE_SERVICE_ACCOUNT }}
+        GDRIVE_FOLDER_ID: ${{ secrets.GDRIVE_FOLDER_ID }}
       run: |
         cat << 'EOF' > process.py
         import os
@@ -63,27 +64,19 @@ jobs:
         drive_creds = service_account.Credentials.from_service_account_info(gdrive_info)
         drive_service = build('drive', 'v3', credentials=drive_creds)
 
-        # DhammaYT Folder ရဲ့ ID ကို အရင်ရှာခြင်း
-        print("Searching for DhammaYT folder...")
-        folder_results = drive_service.files().list(
-            q="name = 'DhammaYT' and mimeType = 'application/vnd.google-apps.folder' and trashed = false",
-            fields="files(id)"
-        ).execute()
-        folder_files = folder_results.get('files', [])
+        folder_id = os.environ['GDRIVE_FOLDER_ID']
+        print(f"Targeting Google Drive Folder ID: {folder_id}")
 
-        if not folder_files:
-            print("Error: DhammaYT folder not found in Google Drive! Make sure you shared it with the Service Account.")
-            exit(1)
-            
-        folder_id = folder_files[0]['id']
-        print(f"Found DhammaYT folder with ID: {folder_id}")
-
-        # DhammaYT Folder ထဲက 'done_' ပါတဲ့ ဗီဒီယိုစာရင်းကို ရှာခြင်း
+        # Folder ID ထဲက 'done_' ပါတဲ့ ဗီဒီယိုစာရင်းကို တိုက်ရိုက်ရှာခြင်း
         results = drive_service.files().list(
             q=f"'{folder_id}' in parents and name contains 'done_' and mimeType contains 'video/' and trashed = false",
             fields="files(id, name)"
         ).execute()
         files = results.get('files', [])
+
+        if not files:
+            print("Error: No videos found with 'done_' in their name inside the specified folder!")
+            exit(1)
 
         # မလွှင့်ရသေးတဲ့ ဗီဒီယိုတစ်ခုကို ရွေးချယ်ခြင်း
         video_to_stream = None
@@ -93,7 +86,7 @@ jobs:
                 break
 
         if not video_to_stream:
-            print("No new videos found to stream in DhammaYT folder!")
+            print("No new videos found to stream! All videos in this folder have already been streamed.")
             exit(1)
 
         print(f"Today's Selected Video: {video_to_stream['name']}")
@@ -107,7 +100,7 @@ jobs:
                 status, done = downloader.next_chunk()
         print("Video download completed.")
 
-        # ၄။ နေ့စွဲအလိုက် Thumbnail ပုံကို DhammaYT Folder ထဲတွင် ရှာဖွေပြီး ဒေါင်းလုဒ်ဆွဲခြင်း
+        # ၄။ နေ့စွဲအလိုက် Thumbnail ပုံကို Folder ထဲတွင် ရှာဖွေပြီး ဒေါင်းလုဒ်ဆွဲခြင်း
         today_str = datetime.date.today().strftime("%Y-%m-%d")
         
         thumb_results = drive_service.files().list(
@@ -132,7 +125,7 @@ jobs:
             has_thumbnail = True
             print("Thumbnail download completed.")
         else:
-            print(f"No thumbnail found for today's date ({today_str}) in DhammaYT folder. Proceeding without custom thumbnail.")
+            print(f"No thumbnail found for today's date ({today_str}) in the folder. Proceeding without custom thumbnail.")
 
         # ၅။ YouTube API ချိတ်ဆက်ခြင်း
         yt_creds = google.oauth2.credentials.Credentials(
@@ -164,7 +157,7 @@ jobs:
         🌄 မနက်စောစောနဲ့ညအချိန် – တရားနာဖို့အတွက် တရားတော်များ ▶️Playlist  🌟
         🌤️ မနက်စောစောတရားနာခြင်းသည် စိတ်အေးချမ်းမှုကို ပေးစွမ်းနိုင်ပြီး ကုသိုလ်ထူးများရရှိနိုင်ပါသည်။
         ▶️📌တရားနာယူရန် Playlist Link:
-           • นံနက်ခင်း Live Stream တရားတော်များ  
+           • နံနက်ခင်း Live Stream တရားတော်များ  
 
         🌙 ညနေ/ညအချိန်တွင်တရားနာခြင်းကလည်း စိတ်အေးချမ်းမူကိုပေးစွမ်းကာ ကုသိုလ်များ တိုးပွားစေပါသည်။
         ▶️📌တရားနာယူရန် Playlist Link:
@@ -184,7 +177,7 @@ jobs:
 
         ✅ Subscribe: / @Dhamma-Mate_Swe
 
-        🌿 𝟒–𝟕 𝐇𝐨𝐮𝐫ս 𝐏eaceful 𝐁uddha 𝐂hanting & 𝐃hamma 𝐒tream 🕊️
+        🌿 𝟒–𝟕 𝐇𝐨𝐮𝐫ս 𝐏eaceful 𝐁uddha 𝐂hanting & 𝓓hamma 𝓢tream 🕊️
         Welcome to our mindful meditation space. This stream is dedicated to the preservation and sharing of the Buddha’s original teachings (Tipiṭaka/Pali Canon), specifically designed for deep meditation, relaxation, and spiritual learning.
 
         ✨ Stream Features & Originality
@@ -201,7 +194,7 @@ jobs:
 
         May all beings be happy, peaceful, and free from suffering.
         🙏🙏 If You Like This Video Don't Forget To 
-        ✅ 𝗟𝗶𝗸𝗲  ✅ 𝗦𝑢𝑏𝑠𝑐𝑟𝑖𝑏𝑒  ✅ 𝗖𝗼𝗺𝗺𝗲𝗻𝘁  ✅ 𝗦𝗵𝗮𝗿𝗲
+        ✅ 𝗟𝗶𝗸𝗲  ✅ 𝗦🇺🇧🇸🇨🇷🇮🇧🇪  ✅ 🇨🇴🇲🇲🇪🇳🇹  ✅ 🇸🇭🇦🇷🇪
 
         THANKS FOR WATCHING!
         _______________________________
