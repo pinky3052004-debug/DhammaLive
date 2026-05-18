@@ -1,0 +1,239 @@
+name: YouTube Live from Google Drive (One Video Per Day)
+
+on:
+  schedule:
+    # မြန်မာစံတော်ချိန် နေ့စဉ် မနက် ၄:၃၀ နာရီ (UTC 22:00) တွင် အလိုအလျောက် တန်းပွင့်မည်
+    - cron: '0 22 * * *'
+  workflow_dispatch: 
+
+jobs:
+  stream_from_drive:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.12'
+
+    - name: Install Dependencies
+      run: |
+        pip install google-auth google-auth-oauthlib google-api-python-client
+        sudo apt-get update && sudo apt-get install -y ffmpeg
+
+    # Python Script ဖြင့် Google Drive မှ History ဖတ်ခြင်း၊ ဗီဒီယိုရွေးခြင်းနှင့် YouTube ပွဲဆောက်ခြင်း
+    - name: Process Video, Thumbnail, YouTube Setup & History
+      id: main_process
+      env:
+        CLIENT_ID: ${{ secrets.CLIENT_ID }}
+        CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}
+        REFRESH_TOKEN: ${{ secrets.REFRESH_TOKEN }}
+        GDRIVE_SERVICE_ACCOUNT: ${{ secrets.GDRIVE_SERVICE_ACCOUNT }}
+        GDRIVE_FOLDER_ID: ${{ secrets.GDRIVE_FOLDER_ID }}
+      run: |
+        cat << 'EOF' > process.py
+        import os
+        import json
+        import datetime
+        import io
+        import google.oauth2.credentials
+        from google.oauth2 import service_account
+        from googleapiclient.discovery import build
+        from googleapiclient.http import MediaIoBaseDownload, MediaFileUpload, MediaIoBaseUpload
+
+        # ၁။ Google Drive API ချိတ်ဆက်ခြင်း
+        gdrive_info = json.loads(os.environ['GDRIVE_SERVICE_ACCOUNT'])
+        drive_creds = service_account.Credentials.from_service_account_info(gdrive_info)
+        drive_service = build('drive', 'v3', credentials=drive_creds)
+
+        folder_id = os.environ['GDRIVE_FOLDER_ID']
+        print(f"Targeting Google Drive Folder ID: {folder_id}")
+
+        # ၂။ Google Drive ထဲတွင် history.txt ဖိုင်ရှိမရှိ ရှာဖွေခြင်း
+        history_results = drive_service.files().list(
+            q=f"'{folder_id}' in parents and name = 'history.txt' and trashed = false",
+            fields="files(id, name)"
+        ).execute()
+        history_files = history_results.get('files', [])
+
+        streamed_videos = []
+        history_file_id = None
+
+        if history_files:
+            # history.txt ဖိုင်ရှိလျှင် ဒေါင်းလုဒ်ဆွဲပြီး ဖတ်ခြင်း
+            history_file_id = history_files[0]['id']
+            print(f"Found existing history.txt with ID: {history_file_id}")
+            request = drive_service.files().get_media(fileId=history_file_id)
+            fh = io.BytesIO()
+            downloader = MediaIoBaseDownload(fh, request)
+            done = False
+            while done is False:
+                status, done = downloader.next_chunk()
+            streamed_videos = fh.getvalue().decode('utf-8').splitlines()
+            print("Successfully read history from Google Drive.")
+        else:
+            print("history.txt not found on Google Drive. Will create a new one later.")
+
+        # ၃။ Folder ID ထဲက 'done_' ပါတဲ့ ဗီဒီယိုစာရင်းကို ရှာခြင်း
+        results = drive_service.files().list(
+            q=f"'{folder_id}' in parents and name contains 'done_' and mimeType contains 'video/' and trashed = false",
+            fields="files(id, name)"
+        ).execute()
+        files = results.get('files', [])
+
+        if not files:
+            print("Error: No videos found with 'done_' in their name inside the specified folder!")
+            exit(1)
+
+        # မလွှင့်ရသေးတဲ့ ဗီဒီယိုတစ်ခုကို ရွေးချယ်ခြင်း
+        video_to_stream = None
+        for file in sorted(files, key=lambda x: x['name']):
+            if file['name'] not in streamed_videos:
+                video_to_stream = file
+                break
+
+        if not video_to_stream:
+            print("No new videos found to stream! All videos in this folder have already been streamed.")
+            exit(1)
+
+        print(f"Today's Selected Video: {video_to_stream['name']}")
+
+        # ၄။ ဗီဒီယိုဖိုင်ကို ဒေါင်းလုဒ်ဆွဲခြင်း
+        request = drive_service.files().get_media(fileId=video_to_stream['id'])
+        with open("video.mp4", "wb") as f:
+            downloader = MediaIoBaseDownload(f, request)
+            done = False
+            while done is False:
+                status, done = downloader.next_chunk()
+        print("Video download completed.")
+
+        # ၅။ နေ့စွဲအလိုက် Thumbnail ပုံကို ဒေါင်းလုဒ်ဆွဲခြင်း
+        today_str = datetime.date.today().strftime("%Y-%m-%d")
+        thumb_results = drive_service.files().list(
+            q=f"'{folder_id}' in parents and name contains '{today_str}' and mimeType contains 'image/' and trashed = false",
+            fields="files(id, name)"
+        ).execute()
+        thumb_files = thumb_results.get('files', [])
+
+        thumbnail_path = "thumbnail.jpg"
+        has_thumbnail = False
+
+        if thumb_files:
+            target_thumb = thumb_files[0]
+            print(f"Found match thumbnail: {target_thumb['name']}")
+            thumb_request = drive_service.files().get_media(fileId=target_thumb['id'])
+            with open(thumbnail_path, "wb") as f:
+                thumb_downloader = MediaIoBaseDownload(f, thumb_request)
+                thumb_done = False
+                while thumb_done is False:
+                    _, thumb_done = thumb_downloader.next_chunk()
+            has_thumbnail = True
+            print("Thumbnail download completed.")
+        else:
+            print(f"No thumbnail found for today's date ({today_str}). Proceeding without it.")
+
+        # ၆။ YouTube API ချိတ်ဆက်ခြင်း
+        yt_creds = google.oauth2.credentials.Credentials(
+            token=None, refresh_token=os.environ['REFRESH_TOKEN'],
+            token_uri="https://oauth2.googleapis.com/token",
+            client_id=os.environ['CLIENT_ID'], client_secret=os.environ['CLIENT_SECRET']
+        )
+        youtube = build('youtube', 'v3', credentials=yt_creds)
+
+        now = datetime.datetime.now(datetime.timezone.utc)
+        instant_scheduled_time = (now + datetime.timedelta(seconds=5)).isoformat()
+        formatted_date = datetime.date.today().strftime("%B %d, %Y")
+
+        live_title = f"🌄နံနက်ခင်း ကံပွင့်လာဘ်ပွင့် တရားတော်များ | {formatted_date}"
+        live_description = f"""🌄🙏🌻နံနက်ခင်းမှစ ကံပွင့်လာဘ်ပွင့် ​​စီးပွားတက် စေရန် မဟာသမယသုတ် မေတ္တာသုတ် ရတနသုတ် တရားတော်များ..."""
+
+        live_tags = ["မဟာသမယသုတ် တရားတော်", "တရားတော်များ", "buddha"]
+
+        # ၇။ YouTube Broadcast ပွဲဆောက်ခြင်း
+        broadcast_res = youtube.liveBroadcasts().insert(
+            part="snippet,status,contentDetails",
+            body={
+                "snippet": {
+                    "title": live_title,
+                    "description": live_description,
+                    "scheduledStartTime": instant_scheduled_time,
+                    "tags": live_tags
+                },
+                "status": {
+                    "privacyStatus": "unlisted",
+                    "selfBroadcast": True,
+                    "madeForKids": False
+                },
+                "contentDetails": {
+                    "enableAutoStart": True,
+                    "enableAutoStop": True
+                }
+            }
+        ).execute()
+        broadcast_id = broadcast_res['id']
+
+        # ၈။ Thumbnail Upload တင်ခြင်း
+        if has_thumbnail:
+            try:
+                media = MediaFileUpload(thumbnail_path, mimeType='image/jpeg')
+                youtube.thumbnails().set(videoId=broadcast_id, media_body=media).execute()
+                print("Custom Thumbnail uploaded successfully!")
+            except Exception as e:
+                print(f"Failed to upload thumbnail: {e}")
+
+        # ၉။ Stream Key အသစ်ဆောက်ပြီး ချိတ်ဆက်ခြင်း
+        stream_res = youtube.liveStreams().insert(
+            part="snippet,cdn",
+            body={
+                "snippet": {"title": f"Auto Stream Key - {formatted_date}"},
+                "cdn": {
+                    "frameRate": "30fps",
+                    "ingestionType": "rtmp",
+                    "resolution": "1080p"
+                }
+            }
+        ).execute()
+
+        youtube.liveBroadcasts().bind(id=broadcast_id, part="id,contentDetails", streamId=stream_res['id']).execute()
+
+        # ၁၀။ ယနေ့လွှင့်လိုက်သည့်ဗီဒီယိုကို စာရင်းထဲထည့်ပြီး Google Drive ပေါ်သို့ ပြန်သိမ်းခြင်း (Upload / Update)
+        streamed_videos.append(video_to_stream['name'])
+        updated_history_content = "\n".join(streamed_videos) + "\n"
+
+        fh_upload = io.BytesIO(updated_history_content.encode('utf-8'))
+        media_body = MediaIoBaseUpload(fh_upload, mimeType='text/plain', resumable=True)
+
+        if history_file_id:
+            # ဖိုင်ဟောင်းရှိပြီးသားဆိုလျှင် Update လုပ်မည်
+            drive_service.files().update(
+                fileId=history_file_id,
+                media_body=media_body
+            ).execute()
+            print("history.txt updated on Google Drive successfully!")
+        else:
+            # ဖိုင်အသစ်ဆိုလျှင် Create လုပ်မည်
+            file_metadata = {'name': 'history.txt', 'parents': [folder_id]}
+            new_history_file = drive_service.files().create(
+                body=file_metadata,
+                media_body=media_body,
+                fields='id'
+            ).execute()
+            print(f"New history.txt created on Google Drive with ID: {new_history_file.get('id')}")
+
+        # Stream Key ကို GitHub Output ထဲ ထည့်ခြင်း
+        with open(os.environ['GITHUB_OUTPUT'], 'a') as f:
+            f.write(f"STREAM_KEY={stream_res['cdn']['ingestionInfo']['streamName']}\n")
+        EOF
+        python process.py
+
+    # ၁၁။ FFmpeg ကိုအသုံးပြုပြီး YouTube ဆာဗာသို့ Live လွှင့်ခြင်း
+    - name: Start FFmpeg Streaming (Automated Unlisted Mode)
+      run: |
+        echo "Streaming today's video to YouTube..."
+        ffmpeg -re -i "video.mp4" \
+          -c:v libx264 -preset veryfast -b:v 3000k -maxrate 3000k -bufsize 6000k \
+          -pix_fmt yuv420p -g 60 -c:a aac -b:a 128k -ar 44100 \
+          -f flv "rtmp://a.rtmp.youtube.com/live2/${{ steps.main_process.outputs.STREAM_KEY }}"
