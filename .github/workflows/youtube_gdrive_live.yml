@@ -224,6 +224,10 @@ jobs:
                 "status": {
                     "privacyStatus": "public",
                     "selfBroadcast": True
+                },
+                "contentDetails": {
+                    "enableAutoStart": True,
+                    "enableAutoStop": True
                 }
             }
         ).execute()
