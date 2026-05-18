@@ -222,7 +222,7 @@ jobs:
                     "tags": live_tags
                 },
                 "status": {
-                    "privacyStatus": "public",
+                    "privacyStatus": "unlisted",
                     "selfBroadcast": True
                 },
                 "contentDetails": {
