@@ -75,6 +75,7 @@ jobs:
             streamed_videos = fh.getvalue().decode('utf-8').splitlines()
             print("Successfully read history from Google Drive.")
         else:
+            # ဖိုင်မရှိသေးရင် Error မတက်ဘဲ ပုံမှန်အတိုင်း ဆက်လုပ်ရန် ကာကွယ်ထားသည်
             print("history.txt not found on Google Drive. Will create a new one later.")
 
         # ၃။ Folder ID ထဲက 'done_' ပါတဲ့ ဗီဒီယိုစာရင်းကို ရှာခြင်း
@@ -148,11 +149,75 @@ jobs:
         formatted_date = datetime.date.today().strftime("%B %d, %Y")
 
         live_title = f"🌄နံနက်ခင်း ကံပွင့်လာဘ်ပွင့် တရားတော်များ | {formatted_date}"
-        live_description = f"""🌄🙏🌻နံနက်ခင်းမှစ ကံပွင့်လာဘ်ပွင့် ​​စီးပွားတက် စေရန် မဟာသမယသုတ် မေတ္တာသုတ် ရတနသုတ် တရားတော်များ..."""
+        live_description = f"""🌄🙏🌻နံနက်ခင်းမှစ ကံပွင့်လာဘ်ပွင့် ​​စီးပွားတက် စေရန် မဟာသမယသုတ် မေတ္တာသုတ် ရတနသုတ် တရားတော်များ
 
-        live_tags = ["မဟာသမယသုတ် တရားတော်", "တရားတော်များ", "buddha"]
+        #ပဌာန်းဒေသနာတော် #ပရိတ်တရားတော်များ #ပရိတ်ကြီး
+        🗓️ Date: {formatted_date} Morning Live Stream
+        ✨မင်္ဂလာနံနက်ခင်းပါ 🙏
+        
+        📺Live Chapter: ကံပွင့်လာဘ်ပွင့်စေပြီး ဘေးအန္တရာယ်ကင်ဝေးစေသောတရားတော်များ
+        1. ✔ မဟာသမယသုတ် 🌟
+        2. ✔ မေတ္တာသုတ် 🌟
+        3. ✔ ရတနသုတ် 🌟
 
-        # ၇။ YouTube Broadcast ပွဲဆောက်ခြင်း
+        🌄 မနက်စောစောနဲ့ညအချိန် – တရားနာဖို့အတွက် တရားတော်များ ▶️Playlist  🌟
+        🌤️ မနက်စောစောတရားနာခြင်းသည် စိတ်အေးချမ်းမှုကို ပေးစွမ်းနိုင်ပြီး ကုသိုလ်ထူးများရရှိနိုင်ပါသည်။
+        ▶️📌တရားနာယူရန် Playlist Link:
+           • นံနက်ခင်း Live Stream တရားတော်များ  
+
+        🌙 ညနေ/ညအချိန်တွင်တရားနာခြင်းကလည်း စိတ်အေးချမ်းမူကိုပေးစွမ်းကာ ကုသိုလ်များ တိုးပွားစေပါသည်။
+        ▶️📌တရားနာယူရန် Playlist Link:
+           • ညပိုင်းပူဇော်ရန် ဘေးအန္တရာယ်ကင်း ကံပွင်လာဘ...  
+
+        📘ပါမောက္ခချုပ်ဆရာတော် အရှင်နန္ဒမာလာဘ比ဝံသ ဟောကြားထားသောတရားတော်များ✨
+        🌼 နေ့စဉ်နားထောင်နိုင်သော တရားတော်များကို တိကျစွာစီစဉ်ထားခြင်းဖြစ်ပါသည်။
+        ▶️📌တရားနာယူရန် Playlist Link:
+           • ပါ‌မောက္ခချုပ်ဆရာတော် ဒေါက်တာနန္ဒမာလာဘ比၀ံသ...  
+
+        မင်္ဂလာပါ
+        📌ပရိတ်တရားတော် ပဌာန်းဒေသနာတော်များကို လေးလေးစားစားနာယူခြင်း ရွတ်ဖက်ပူဇော်ခြင်းသည် မကောင်းသော အမှောင်ပယောဂ ဘေးဘယ ရန်မာရ်အပေါင်းတို့မှကင်းဝေးစေခြင်း ၊ ကပ်ရောဂါ ဒုက္ခဆင်းရဲခြင်းအပေါင်းတို့မှ ကင်းဝေးစေခြင်း ၊ ကိုယ်စိတ်နှစ်ဖြာကျန်းမာချမ်းသာစေခြင်း အစရှိသည့် သုခအပေါင်းတို့ဖြင့် ပြည့်စုံစေပါသည်။
+
+        📌ဓမ္မ မိတ်ဆွေ သူတော်စင် အပေါင်း မင်းဆိုး ရန်ဆိုး နှင့် ကပ်ကြီး(၃)ပါး ကျော်လွားနိုင်ပြီး စိတ်ကျန်းမာ ကိုယ်ကျန်းမာစွာ ဖြင့် နေနိုင်ကြပါစေ။
+
+        📌ဓမ္မမိတ်ဆွေများ အမြဲအလွယ်တကူ နာယူပူဇော်နိုင်ရန်အတွက် Buddha-တရားတော် Channelကို Subscribe လုပ်ထားခြင်းဖြင့် နေ့စဉ် ဓမ္မသာဝနကုသိုလ်တော်များ ပွားများနိုင်ကြပါစေ 🙏🙏🙏
+
+        ✅ Subscribe: / @Dhamma-Mate_Swe
+
+        🌿 𝟒–𝟕 𝐇𝐨𝐮𝐫𝐬 𝐏eaceful 𝐁uddha 𝐂hanting & 𝓓hamma 𝓢tream 🕊️
+        Welcome to our mindful meditation space. This stream is dedicated to the preservation and sharing of the Buddha’s original teachings (Tipiṭaka/Pali Canon), specifically designed for deep meditation, relaxation, and spiritual learning.
+
+        ✨ Stream Features & Originality
+        🔊 Unique Audio: Unlike typical loops, this stream features continuous, non-repeating chanting and Dhamma teachings. Each sermon progresses naturally, providing fresh insights throughout the session.
+
+        🎥 Mindful Visuals: A high-quality, custom-edited 1-minute loop with three serene scenes changing every 10 seconds to maintain visual tranquility without distraction.
+
+        🎙️ Original Production: All content is curated with original narration, real-time updates (overlays, chat, and time), and transformative editing by Buddha-တရားတော်.
+
+        💬 Live Community: Our live chat is open for mindful conversation and the sharing of loving-kindness (Metta).
+
+        ⚖️ Copyright Disclaimer (DMCA & YouTube Policy)
+        Copyright Disclaimer Under Section 107 of the Copyright Act 1976, allowance is made for "fair use" for purposes such as criticism, comment, news reporting, teaching, scholarship, and research.
+
+        May all beings be happy, peaceful, and free from suffering.
+        🙏🙏 If You Like This Video Don't Forget To 
+        ✅ Լ𝗶𝗸е  ✅ 飾𝑢𝑏𝑠𝑐𝑟𝑖𝑏е  ✅ 𝗖𝗼𝗺𝗺е𝗻𝘁  ✅ 𝗦𝗵𝗮𝗿е
+
+        THANKS FOR WATCHING!
+        _______________________________
+        #ပဌာန်းဒေသနာတော် #ပရိတ်ကြီး #မဟာသမယသုတ် #မေတ္တာသုတ် #ရတနသုတ် #တရားတော် #တရားတော်များ #ပရိတ်တရားတော်များ #မြန်မာနှစ်သစ် #livestream #၇ရက်သားသမီးများမေတ္တာပို့ #ကံပွင့်လာက်ပွင့် #နံနက်ခင်းတရား #morningdhamma #mindfulness #dailymotivation #မနက်တိုင်းဖွင့်ရန် #Buddhaတရားတော် #dhamma"""
+
+        live_tags = [
+            "မဟာသမယသုတ် တရားတော်", "တရားတော်များ", "ပါချုပ်ဆရာတော်ဘုရားကြီး တရားတော်များ", 
+            "tayar taw myanmar", "buddha", "တရားတော်", "တရားတော်များ 2025", 
+            "မဟာသမယသုတ် တရားတော် စာတန်းထိုး", "တရားတော်များ 2024", "မဟာသမယသုတ်", 
+            "ပါမောက္ခချုပ်ဆရာတော် တရားတော်များ", "ပါချုပ်ဆရာတော်ဘုရားကြီး တရားတော်များ 2025", 
+            "မဟာသမယသုတ် ပါဠိတော် (နတ်ချစ်ဂါထာတော်)", "ဂုဏ်တော်ကွန်ချာ တရား", 
+            "ပါချုပ်ဆရာတော်ဘုရားကြီး တရားတော်များ 2024", "ဂုဏ်တော်ကွန်ချာ တရားတော်", 
+            "ပဌာန်း တရားတော်များ", "တရားတော်များ၂၀၂၆", "တရားတော်များ 2026", 
+            "တရား live stream", "tayar live"
+        ]
+
+        # ၇။ YouTube Broadcast ပွဲဆောက်ခြင်း (Unlisted + Not for Kids စနစ်များ သတ်မှတ်ထားသည်)
         broadcast_res = youtube.liveBroadcasts().insert(
             part="snippet,status,contentDetails",
             body={
@@ -163,9 +228,9 @@ jobs:
                     "tags": live_tags
                 },
                 "status": {
-                    "privacyStatus": "unlisted",
+                    "privacyStatus": "unlisted", # လူတိုင်းမမြင်စေဘဲ လင့်ရှိသူသာ ကြည့်နိုင်ရန်
                     "selfBroadcast": True,
-                    "madeForKids": False
+                    "madeForKids": False        # Not for Kids စနစ် (Live Chat ပွင့်ရန်)
                 },
                 "contentDetails": {
                     "enableAutoStart": True,
@@ -199,7 +264,7 @@ jobs:
 
         youtube.liveBroadcasts().bind(id=broadcast_id, part="id,contentDetails", streamId=stream_res['id']).execute()
 
-        # ၁၀။ ယနေ့လွှင့်လိုက်သည့်ဗီဒီယိုကို စာရင်းထဲထည့်ပြီး Google Drive ပေါ်သို့ ပြန်သိမ်းခြင်း (Upload / Update)
+        # ၁၀။ ယနေ့လွှင့်လိုက်သည့်ဗီဒီယိုကို စာရင်းထဲထည့်ပြီး Google Drive ပေါ်သို့ အော်တို အပ်ဒိတ်လုပ်ခြင်း
         streamed_videos.append(video_to_stream['name'])
         updated_history_content = "\n".join(streamed_videos) + "\n"
 
@@ -214,7 +279,7 @@ jobs:
             ).execute()
             print("history.txt updated on Google Drive successfully!")
         else:
-            # ဖိုင်အသစ်ဆိုလျှင် Create လုပ်မည်
+            # ပထမဆုံးအကြိမ် ဖိုင်မရှိသေးလျှင် Google Drive ပေါ်တွင် အလိုအလျောက် အသစ်ဆောက်မည်
             file_metadata = {'name': 'history.txt', 'parents': [folder_id]}
             new_history_file = drive_service.files().create(
                 body=file_metadata,
