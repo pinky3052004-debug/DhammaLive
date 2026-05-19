@@ -148,7 +148,7 @@ jobs:
         instant_scheduled_time = (now + datetime.timedelta(seconds=5)).isoformat()
         formatted_date = datetime.date.today().strftime("%B %d, %Y")
 
-        live_title = f"🌄နံနက်ခင်း ကံပွင့်လာဘ်ပွင့် တရားတော်များ | {formatted_date}"
+        live_title = f"🌄နံနက်ခင်း ကံပွင့်လာဘ်ပွင့် စီးပွားတက် မဟာသမယသုတ် မေတ္တာသုတ် ရတနသုတ် တရားတော်များ | {formatted_date}"
         live_description = f"""🌄🙏🌻နံနက်ခင်းမှစ ကံပွင့်လာဘ်ပွင့် ​​စီးပွားတက် စေရန် မဟာသမယသုတ် မေတ္တာသုတ် ရတနသုတ် တရားတော်များ
 
         #ပဌာန်းဒေသနာတော် #ပရိတ်တရားတော်များ #ပရိတ်ကြီး
