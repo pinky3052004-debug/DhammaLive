@@ -183,7 +183,7 @@ jobs:
 
         ✅ Subscribe: / @Dhamma-Mate_Swe
 
-        🌿 𝟒–𝟕 𝐇𝐨𝐮𝐫𝐬 𝐏eaceful 𝐁uddha 𝐂hanting & 𝓓hamma 𝓢tream 🕊️
+        🌿 𝟒–𝟕 𝐇𝐨𝐮𝐫ս 𝐏eaceful 𝐁uddha 𝐂hanting & 𝓓hamma 𝓢tream 🕊️
         Welcome to our mindful meditation space. This stream is dedicated to the preservation and sharing of the Buddha’s original teachings (Tipiṭaka/Pali Canon), specifically designed for deep meditation, relaxation, and spiritual learning.
 
         ✨ Stream Features & Originality
@@ -217,7 +217,7 @@ jobs:
             "တရား live stream", "tayar live"
         ]
 
-        # ၇။ YouTube Broadcast ပွဲဆောက်ခြင်း (selfDeclaredMadeForKids ဟု ပြောင်းလဲပြင်ဆင်လိုက်ပါသည်)
+        # ၇။ YouTube Broadcast ပွဲဆောက်ခြင်း
         broadcast_res = youtube.liveBroadcasts().insert(
             part="snippet,status,contentDetails",
             body={
@@ -230,7 +230,7 @@ jobs:
                 "status": {
                     "privacyStatus": "unlisted",
                     "selfBroadcast": True,
-                    "selfDeclaredMadeForKids": False # အသစ်ပြောင်းလဲထားသော စနစ်အမှန်ဖြစ်ပါသည်
+                    "selfDeclaredMadeForKids": False
                 },
                 "contentDetails": {
                     "enableAutoStart": True,
@@ -269,7 +269,8 @@ jobs:
         updated_history_content = "\n".join(streamed_videos) + "\n"
 
         fh_upload = io.BytesIO(updated_history_content.encode('utf-8'))
-        media_body = MediaIoBaseUpload(fh_upload, mimeType='text/plain', resumable=True)
+        # သတိပြုရန်- 'mimetype' ဟု စာလုံးအသေးဖြင့် ပြင်ဆင်ထားပါသည်
+        media_body = MediaIoBaseUpload(fh_upload, mimetype='text/plain', resumable=True)
 
         if history_file_id:
             # ဖိုင်ဟောင်းရှိပြီးသားဆိုလျှင် Update လုပ်မည်
