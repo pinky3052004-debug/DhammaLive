@@ -217,7 +217,7 @@ jobs:
             "တရား live stream", "tayar live"
         ]
 
-        # ၇။ YouTube Broadcast ပွဲဆောက်ခြင်း (Unlisted + Not for Kids စနစ်များ သတ်မှတ်ထားသည်)
+        # ၇။ YouTube Broadcast ပွဲဆောက်ခြင်း (selfDeclaredMadeForKids ဟု ပြောင်းလဲပြင်ဆင်လိုက်ပါသည်)
         broadcast_res = youtube.liveBroadcasts().insert(
             part="snippet,status,contentDetails",
             body={
@@ -228,9 +228,9 @@ jobs:
                     "tags": live_tags
                 },
                 "status": {
-                    "privacyStatus": "unlisted", # လူတိုင်းမမြင်စေဘဲ လင့်ရှိသူသာ ကြည့်နိုင်ရန်
+                    "privacyStatus": "unlisted",
                     "selfBroadcast": True,
-                    "madeForKids": False        # Not for Kids စနစ် (Live Chat ပွင့်ရန်)
+                    "selfDeclaredMadeForKids": False # အသစ်ပြောင်းလဲထားသော စနစ်အမှန်ဖြစ်ပါသည်
                 },
                 "contentDetails": {
                     "enableAutoStart": True,
