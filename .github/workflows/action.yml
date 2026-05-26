@@ -240,7 +240,7 @@ jobs:
         # ၈။ Thumbnail Upload တင်ခြင်း
         if has_thumbnail:
             try:
-                media = MediaFileUpload(thumbnail_path, mimeType='image/jpeg')
+                media = MediaFileUpload(thumbnail_path, mimetype='image/jpeg')
                 youtube.thumbnails().set(videoId=broadcast_id, media_body=media).execute()
                 print("Custom Thumbnail uploaded successfully!")
             except Exception as e:
