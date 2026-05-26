@@ -225,7 +225,7 @@ jobs:
                     "tags": live_tags
                 },
                 "status": {
-                    "privacyStatus": "public",
+                    "privacyStatus": "private",
                     "selfBroadcast": True,
                     "selfDeclaredMadeForKids": False
                 },
